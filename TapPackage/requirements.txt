@@ -1,5 +1,0 @@
-pydub
-tqdm
-setuptools
-requests
-pex
