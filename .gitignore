@@ -6,3 +6,5 @@ dist
 *.wav
 .gitignore
 clicks/
+*.mp3
+*.replay
