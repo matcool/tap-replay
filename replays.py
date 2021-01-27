@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Union
 import struct
 from gd import Level
-from gd.api import get_time_length
+from gd.api import get_length_from_x
 
 @dataclass
 class Action:
@@ -35,10 +35,10 @@ def parse_replaybot(data: bytes) -> Replay:
 
 def convert_to_time(replay: Replay, level: Level) -> Replay:
     editor = level.open_editor()
-    start_speed = editor.get_start_speed()
-    speeds = editor.get_speeds()
+    start_speed = editor.get_header().speed
+    speeds = editor.get_speed_portals()
     for i, action in enumerate(replay.actions):
         # TODO: this doesn't account for scaled or rotated speed portals
-        time = get_time_length(action.x, start_speed, speeds)
+        time = get_length_from_x(action.x, start_speed, speeds)
         replay.actions[i] = TimeAction(time, action.hold)
     return replay
