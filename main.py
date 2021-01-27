@@ -17,15 +17,19 @@ args = parser.parse_args()
 data = args.replay.read()
 args.replay.close()
 
+print('Parsing replay')
 replay = replays.parse_replaybot(data)
 
 client = gd.Client()
+print('Downloading level')
 lvl = client.run(client.get_level(args.level))
 
+print('Converting replay')
 replays.convert_to_time(replay, lvl)
 
 clicks_path = Path(args.clicks)
 
+print('Loading clicks')
 clicks = [clicks.Click(action.time, action.hold, clicks_path) for action in replay.actions]
 full_length = clicks[-1].time + 1
 
