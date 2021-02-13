@@ -2,7 +2,12 @@ from dataclasses import dataclass
 from typing import List, Union
 import struct
 from gd import Level
-from gd.api import get_length_from_x
+try:
+    from gd.api import get_length_from_x
+    GD_PY_DEVELOP = False
+except ImportError:
+    from gd.api import get_time_length as get_length_from_x
+    GD_PY_DEVELOP = True
 from gd.api.enums import Speed
 
 @dataclass
@@ -37,7 +42,7 @@ def parse_replaybot(data: bytes) -> Replay:
 def convert_to_time(replay: Replay, level: Level) -> Replay:
     editor = level.open_editor()
     start_speed = editor.get_header().speed or Speed.NORMAL
-    speeds = editor.get_speed_portals()
+    speeds = editor.get_speeds() if GD_PY_DEVELOP else editor.get_speed_portals()
     for i, action in enumerate(replay.actions):
         # TODO: this doesn't account for scaled or rotated speed portals
         time = get_length_from_x(action.x, start_speed, speeds)
