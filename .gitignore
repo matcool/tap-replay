@@ -11,3 +11,5 @@ clicks/
 env/
 *.dat
 .vscode/
+*.zbf
+ffmpeg/

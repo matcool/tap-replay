@@ -1,3 +1,2 @@
 pydub
 tqdm
-gd.py

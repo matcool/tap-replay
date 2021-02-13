@@ -1,14 +1,12 @@
 import argparse
 import replays
-import gd
 from pathlib import Path
 import clicks
 from pydub import AudioSegment
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Generate clicks')
-parser.add_argument('replay', help='Path to the replay/macro file', type=argparse.FileType('rb'))
-parser.add_argument('level', help='Level ID', type=int)
+parser.add_argument('replay', help='Path to the .zbf file', type=argparse.FileType('rb'))
 parser.add_argument('output', help='Path to the output mp3 file')
 parser.add_argument('--clicks', default='clicks', required=False, help='Path to the clicks folder')
 
@@ -18,14 +16,7 @@ data = args.replay.read()
 args.replay.close()
 
 print('Parsing replay')
-replay = replays.parse_replaybot(data)
-
-client = gd.Client()
-print('Downloading level')
-lvl = client.run(client.get_level(args.level))
-
-print('Converting replay')
-replays.convert_to_time(replay, lvl)
+replay = replays.parse_zbot_frame(data)
 
 clicks_path = Path(args.clicks)
 
