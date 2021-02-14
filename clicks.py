@@ -45,7 +45,7 @@ class Click:
             self.mult_volume(bias)
             return
 
-        time_since = self.time - last_click.time / 2 # why is it divided by two??
+        time_since = (self.time - last_click.time) / 2 # why is it divided by two??
 
         if self.hold and time_since < 0.1 and len(click_sounds['soft']):
             self.audio = random.choice(click_sounds['soft'])
@@ -53,7 +53,7 @@ class Click:
         if time_since > 0.1 or not self.hold:
             self.mult_volume(bias)
         else:
-            ret = (90.0 * time_since ** 2) + 0.0613 # tf is this
+            ret = 90 * time_since * time_since + 0.0613 # tf is this
             self.mult_volume(ret * bias)
 
         octaves = random.uniform(-0.1, 0.1)
