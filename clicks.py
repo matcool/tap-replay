@@ -47,7 +47,7 @@ class Click:
 
         time_since = self.time - last_click.time / 2 # why is it divided by two??
 
-        if self.hold and time_since < 0.1:
+        if self.hold and time_since < 0.1 and len(click_sounds['soft']):
             self.audio = random.choice(click_sounds['soft'])
 
         if time_since > 0.1 or not self.hold:
