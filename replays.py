@@ -39,6 +39,18 @@ def parse_replaybot(data: bytes) -> Replay:
             actions.append(Action(x, bool(hold)))
     return Replay(actions)
 
+def parse_zbot(data: bytes) -> Replay:
+    delta, speed_hack = struct.unpack('ff', data[:8])
+    fps = 1 / delta / speed_hack
+    actions = []
+    for action_data in slice_per(data[8:], 6):
+        if len(action_data) != 6:
+            print('wtf', action_data)
+        else:
+            x, hold, player_1 = struct.unpack('fbb', action_data)
+            actions.append(Action(x, hold == 0x31))
+    return Replay(actions)
+
 def convert_to_time(replay: Replay, level: Level) -> Replay:
     editor = level.open_editor()
     start_speed = editor.get_header().speed or Speed.NORMAL
