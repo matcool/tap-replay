@@ -15,42 +15,39 @@ def promptExit():
 
 os.environ['PATH'] += os.pathsep + str(Path('./ffmpeg/bin').resolve())
 
-# lmao
+CWD = Path.cwd()
+
+print('Tap by Camden314, zBot Frame Beta port by mat')
+
 try:
-    if find_executable('ffmpeg') is None:
-        from pyunpack import Archive
-        import requests
-        print('FFmpeg not found on path, downloading it')
-        url = 'https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full.7z'
-        response = requests.get(url, stream=True)
-        total_size = int(response.headers.get('content-length', 0))
-        block_size = 1024
-        progress_bar = tqdm(total=total_size, unit='iB', unit_scale=True, desc='Downloading ffmpeg')
-        with open('ffmpeg.7z', 'wb') as file:
-            for data in response.iter_content(block_size):
-                progress_bar.update(len(data))
-                file.write(data)
-        
-        progress_bar.close()
-        if total_size != 0 and progress_bar.n != total_size:
-            print('ERROR, something went wrong')
-            promptExit()
-        
-        Archive('ffmpeg.7z').extractall('.')
-        try:
-            ffmpeg_folder = next(Path('.').glob('ffmpeg-*'))
-        except StopIteration:
-            print('Extracted ffmpeg folder not found, rename it yourself to just ffmpeg and run this again')
-            promptExit()
-        ffmpeg_folder.rename('ffmpeg')
-
-
     root = tk.Tk()
     root.withdraw()
 
+    if find_executable('ffmpeg') is None:
+        print('FFmpeg was not found on path, please download it from the link below, and extract it.')
+        print('https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full.7z')
+        input('Press enter after you\'ve extracted ffmpeg...')
+
+        ffmpeg_folder = filedialog.askdirectory(mustexist=True, title='Open the extracted ffmpeg folder')
+        if not ffmpeg_folder:
+            print('why did you press cancel')
+            promptExit()
+        ffmpeg_folder = Path(ffmpeg_folder)
+        
+        for path in ffmpeg_folder.glob('ffmpeg-*'):
+            ffmpeg_folder = path
+            break
+
+        if not (ffmpeg_folder / 'bin' / 'ffmpeg.exe').exists():
+            print('No ffmpeg.exe found, make sure you select the folder with the following structure')
+            print('bin/\ndoc/\npresets/\nLICENSE\nREADME.txt')
+            promptExit()
+        
+        ffmpeg_folder.rename(CWD / 'ffmpeg')
+
     if len(sys.argv) < 2:
-        replay_file = filedialog.askopenfile(title='Open the zbot macro', filetypes=('zBot\ Frame\ Based {.zbf}',), mode='rb')
-        if replay_file is None:
+        replay_file = filedialog.askopenfile(title='Open the .zbf macro', filetypes=('zBot\ Frame\ Based {.zbf}',), mode='rb')
+        if not replay_file:
             promptExit()
     else:
         replay_file = open(sys.argv[1], 'rb')
@@ -62,7 +59,7 @@ try:
     replay = replays.parse_zbot_frame(data)
 
     clicks_path = filedialog.askdirectory(mustexist=True, title='Open the clicks folder')
-    if clicks_path is None:
+    if not clicks_path:
         promptExit()
 
     clicks_path = Path(clicks_path)
@@ -101,7 +98,7 @@ try:
             output = output.overlay(click.audio, position=click.time * 1000)
 
     output_file = filedialog.asksaveasfilename(defaultextension='mp3', filetypes=('MP3 {.mp3}',), initialdir='.')
-    if output_file is None:
+    if not output_file:
         print(':|')
         promptExit()
     output.export(output_file)
